@@ -1,8 +1,9 @@
 from scapy.all import *
 from itertools import groupby
 import statistics 
+import sys
 
-packets=rdpcap("/Users/jbao/DeviceIdentityClassifier/scan.pcap")
+packets=rdpcap(sys.argv[1])
 timestamps = map(lambda x: x.time, packets)
 print(min(list(timestamps)))
 streams = dict()
