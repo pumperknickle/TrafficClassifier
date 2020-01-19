@@ -52,7 +52,8 @@ def group(interval, packets):
 
 def mean(lst): 
     return sum(lst) / len(lst) 
-
+mapping = dict()
+counter = 0
 features = []
 labels = []
 for key in streams:
@@ -70,11 +71,51 @@ for key in streams:
     sub_group = sub_group + ([0] * (10 - len(sub_group)))
     print(sub_group)
     features.append([mean(sub_group), statistics.stdev(sub_group)])
-    labels.append(key)
+    labels.append(counter)
+  counter = counter + 1
 print(features)
 print(labels)
 
 from sklearn.neighbors import KNeighborsClassifier
 neigh = KNeighborsClassifier(n_neighbors=3)
 neigh.fit(features, labels)
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+
+firstSet = list(map(lambda x: x[0], features))
+secondSet = list(map(lambda x: x[1], features))
+x_min, x_max = min(firstSet) - 1, max(firstSet) + 1
+y_min, y_max = min(secondSet) - 1, max(secondSet) + 1
+
+h = 1
+
+print(firstSet)
+print(secondSet)
+print(x_min)
+print(x_max)
+
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+                     np.arange(y_min, y_max, h))
+Z = neigh.predict(np.c_[xx.ravel(), yy.ravel()])
+
+print(Z)
+
+# Create color maps
+cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF']) # for meshgrid
+cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF']) # for points
+
+Z = Z.reshape(xx.shape)
+plt.figure()
+plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+
+plt.scatter(firstSet, secondSet, c=labels, cmap=cmap_bold)
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.title("Device Traffic Clustering")
+plt.show()
+
+
 print(neigh.predict([[73, 230]]))
