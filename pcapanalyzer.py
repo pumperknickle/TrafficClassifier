@@ -86,9 +86,47 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
+firstSet = list(map(lambda x: x[0], features))
+secondSet = list(map(lambda x: x[1], features))
+thirdSet = list(map(lambda x: x[2], features))
+fourthSet = list(map(lambda x: x[3], features))
+fifthSet = list(map(lambda x: x[4], features))
+sixthSet = list(map(lambda x: x[5], features))
 
+x_min, x_max = min(firstSet) - 1, max(firstSet) + 1
+y_min, y_max = min(secondSet) - 1, max(secondSet) + 1
+third_min, third_max = min(thirdSet) - 1, max(thirdSet) + 1
+fourth_min, fourth_max = min(fourthSet) - 1, max(fourthSet) + 1
+fifth_min, fifth_max = min(fifthSet) - 1, max(fifthSet) + 1
+sixth_min, sixth_max = min(sixthSet) - 1, max(sixthSet) + 1
 
+h = 50
+
+xx, yy, third, fourth, fifth, sixth = np.meshgrid(np.arange(x_min, x_max, h),
+                     np.arange(y_min, y_max, h),
+                     np.arange(third_min, third_max, h),
+                     np.arange(fourth_min, fourth_max, h),
+                     np.arange(fifth_min, fifth_max, h),
+                     np.arange(sixth_min, sixth_max, h))
+Z = neigh.predict(np.c_[xx.ravel(), yy.ravel(), third.ravel(), fourth.ravel(), fifth.ravel(), sixth.ravel()])
 predicted = neigh.predict(features)
+print(Z)
+
+# Create color maps
+cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF']) # for meshgrid
+cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF']) # for points
+
+Z = Z.reshape(xx.shape)
+plt.figure()
+plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+
+plt.scatter(firstSet, secondSet, c=labels, cmap=cmap_bold)
+plt.xlim(xx.min(), xx.max())
+plt.ylim(yy.min(), yy.max())
+plt.title("Device Traffic Clustering")
+plt.xlabel("mean traffic (1/10 ms interval)")
+plt.ylabel("standard deviation")
+plt.show()
 
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(labels, predicted)
