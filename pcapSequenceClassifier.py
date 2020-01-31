@@ -58,7 +58,7 @@ num_classes = len(dummy_labels[0])
 
 def baseline_model():
   model = Sequential()
-  model.add(LSTM(32, input_shape=(sequence_length, 2)))
+  model.add(LSTM(100, input_shape=(sequence_length, 2)))
   model.add(Dense(num_classes, activation='softmax'))
   model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
   return model
