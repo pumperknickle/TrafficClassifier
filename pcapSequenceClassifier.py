@@ -63,6 +63,8 @@ def baseline_model():
   model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
   return model
 
+print(features)
+print(labels)
 feature_array = np.array(features)
 estimator = KerasClassifier(build_fn=baseline_model, epochs=200, batch_size=5, verbose=1)
 kfold = KFold(n_splits=10, shuffle=True)
