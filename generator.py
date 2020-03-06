@@ -3,6 +3,7 @@ from itertools import groupby
 import sys
 import glob
 from featureTransforms import convert_to_features
+import pyshark
 
 directory = sys.argv[1]
 extended = directory + '/*/'
@@ -40,6 +41,9 @@ for path in paths:
   pcapPath = path + '/*.pcap'
   pcapFiles = glob.glob(pcapPath)
   for file in pcapFiles:
+    print(file)
+    pcap1 = pyshark.FileCapture(pathToFile)
+    print(pcap1[0])
     pcap = rdpcap(file)
     sequences = get_sequences(pcap)
     featuresForFile = extractFeatures(sequences, sequence_length)
@@ -77,5 +81,4 @@ plot_model(baseline_model(), to_file='model.png', show_shapes=True, show_layer_n
 
 estimator = KerasRegressor(build_fn=baseline_model, epochs=50, batch_size=5, verbose=1)
 kfold = KFold(n_splits=10, shuffle=True)
-results = cross_val_score(estimator, np.array(features), np.array(labels), cv=kfold)
-print("Baseline: %.2f%% (%.2f%%)" % (results.mean()*100, results.std()*100))
+gi
