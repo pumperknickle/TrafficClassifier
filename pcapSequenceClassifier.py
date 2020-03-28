@@ -1,13 +1,12 @@
-from scapy.all import *
 from itertools import groupby
 import sys
 import glob
-from featureTransforms import convert_to_features
+from advancedPcapAnalyzer import convertToFeatures
 
 directory = sys.argv[1]
 extended = directory + '/*/'
 paths = glob.glob(extended)
-sequence_length = 30
+sequence_length = 20
 
 def split_sequence_unevenly(lst, n):
   for i in range(0, len(lst), n):
@@ -34,8 +33,9 @@ for path in paths:
   pcapPath = path + '/*.pcap'
   pcapFiles = glob.glob(pcapPath)
   for file in pcapFiles:
-    pcap = rdpcap(file)
-    sequences = get_sequences(pcap)
+    sequences = convertToFeatures(file)
+    if not sequences:
+      break
     chunks = split_sequence_evenly(sequences, sequence_length)
     for chunk in chunks:
       features.append(chunk)
@@ -59,7 +59,7 @@ num_classes = len(dummy_labels[0])
 
 def baseline_model():
   model = Sequential()
-  model.add(LSTM(100, input_shape=(sequence_length, 2), return_sequences=True))
+  model.add(LSTM(100, input_shape=(sequence_length, 1), return_sequences=True))
   model.add(Dropout(0.2))
   model.add(LSTM(100))
   model.add(Dropout(0.2))
