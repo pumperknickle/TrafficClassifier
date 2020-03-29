@@ -9,7 +9,6 @@ def most_common(lst):
  
 def convertToFeatures(pathToFile):
   pcaps = pyshark.FileCapture(pathToFile)
-  pcaps.set_debug()
   tuples = []
   for pcap in pcaps:
     if 'IP' in pcap and 'TCP' in pcap and 'TLS' not in pcap:
