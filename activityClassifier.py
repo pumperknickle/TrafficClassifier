@@ -6,7 +6,6 @@ directory = sys.argv[1]
 extended = directory + '/*/'
 paths = glob.glob(extended)
 
-
 # distance metric used by dbscan
 distance_threshold = 5.0
 # total ngrams divided by cluster threshold is equal to the min_samples needed to form a cluster in dbscan
@@ -21,14 +20,11 @@ for path in paths:
   pcapPath = path + '/*.pcap'
   pcapFiles = glob.glob(pcapPath)
   for file in pcapFiles:
-    print(file)
-    print(currentLabel)
     featureV = convertToFeatures(file)
     features.append(featureV)
     labels.append(currentLabel)
   currentLabel += 1
 
-print(features)
 signatureFeatures = [None] * len(features)
 
 # Create features
@@ -51,13 +47,16 @@ for i in range(2, 6):
 
 finalFeatures = []
 finalLabels = []
+totalClassified = 0
 for i in range(len(features)):
   signatureFeature = signatureFeatures[i]
   if not all(v == 0 for v in signatureFeature):
     finalFeatures.append(signatureFeature)
     finalLabels.append(labels[i])
-  
 
+print('total classified')
+print(len(set(finalLabels)))
+  
 import numpy as np
 from keras.utils import np_utils
 from sklearn.model_selection import cross_val_score

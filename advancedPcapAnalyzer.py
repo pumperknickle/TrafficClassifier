@@ -3,6 +3,7 @@ import sys
 import math
 import statistics
 from sklearn.cluster import DBSCAN
+import random
 
 def most_common(lst):
     return max(set(lst), key=lst.count) 
@@ -103,7 +104,15 @@ def matches(ngram, signature):
     signatureElement = signature[i]
     sigMin = signatureElement[0]
     sigMax = signatureElement[1]
-    return ngramElement >= sigMin and ngramElement <= sigMax
+    if ngramElement < sigMin or ngramElement > sigMax:
+      return False
+  return True
+
+def generate_from_sig(signature):
+  generated = []
+  for tuple in signature:
+    generated.append(random.randint(tuple[0], tuple[1]))
+  return generated
 
 def extractFeatures(ngrams, signatures):
   features = []
@@ -115,6 +124,22 @@ def extractFeatures(ngrams, signatures):
     frequency = (count)/float(len(signatures))
     features.append(frequency)
   return features
+
+def signatureToString(signature):
+  signature_ints = []
+  for tuple in signature:
+    signature_ints.append(tuple[0])
+    signature_ints.append(tuple[1])
+  return ', '.join(str(x) for x in signature_ints)
+
+def stringToSignature(item):
+  item.replace(" ", "")
+  arr = item.split(',')
+  int_arr = [int(numeric_string) for numeric_string in arr]
+  sig = []
+  for i in range(0, len(int_arr), 2):
+    sig.append((int_arr[i], int_arr[i+1]))
+  return sig
         
 pathToFile = '/Users/jbao/DeviceIdentityClassifier/captures2/D-LinkSensor/Setup-B-1-STA.pcap'
 features = convertToFeatures(pathToFile)
