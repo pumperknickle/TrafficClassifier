@@ -36,6 +36,7 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
   pcapFiles = glob.glob(pcapPath)
   sequences = []
   all_signatures = dict()
+  print(pcapFiles)
   for file in pcapFiles:
     sequence = convertToFeatures(file)
     print(sequence)
