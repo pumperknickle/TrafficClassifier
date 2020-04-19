@@ -33,9 +33,11 @@ generatedLabels = []
 
 # convert pcaps to packet size sequences
 for path in paths:
-  for i in len(range(seqeunces_per_device)):
-    generated = generate(path, distance_threshold, min_cluster, min_sig_size, max_sig_size, max_sig_generated)
-    generatedFeatures.append(generated)
+  generated = generate(path, distance_threshold, min_cluster, min_sig_size, max_sig_size, seqeunces_per_device)
+  for g in generated:
+    print(path)
+    print(g)
+    generatedFeatures.append(g)
     generatedLabels.append(currentLabel)
   pcapPath = path + '/*.pcap'
   pcapFiles = glob.glob(pcapPath)
@@ -45,6 +47,7 @@ for path in paths:
     labels.append(currentLabel)
   currentLabel += 1
 
+print(features)
 print(generatedFeatures)
 signatureFeatures = [None] * len(features)
 generatedSignatureFeatures = [None] * len(generatedFeatures)
@@ -75,5 +78,36 @@ for i in range(min_sig_size, max_sig_size + 1):
     else:
       generatedSignatureFeatures[n] = generatedSignatureFeatures[n] + newFeatures
 
-print(generatedSignatureFeatures)
-print(signatureFeatures)
+finalFeatures = []
+finalLabels = []
+
+for i in range(len(signatureFeatures)):
+  signatureFeature = signatureFeatures[i]
+  if not all(v == 0 for v in signatureFeature):
+    finalFeatures.append(signatureFeature)
+    finalLabels.append(labels[i])
+
+finalGeneratedFeatures = []
+finalGeneratedLabels = []
+
+for i in range(len(generatedFeatures)):
+  signatureFeature = generatedSignatureFeatures[i]
+  if not all(v == 0 for v in signatureFeature):
+    finalGeneratedFeatures.append(signatureFeature)
+    finalGeneratedLabels.append(generatedLabels[i])
+
+dummy_labels = np_utils.to_categorical(finalLabels)
+num_classes = len(dummy_labels[0])
+dummy_generated_labels = np_utils.to_categorical(finalGeneratedLabels)
+
+def baseline_model():
+  model = Sequential()
+  model.add(Dense(300, activation='relu'))
+  model.add(Dense(300, activation='relu'))
+  model.add(Dense(num_classes, activation='softmax'))
+  model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+  return model
+
+plot_model(baseline_model(), to_file='model.png', show_shapes=True, show_layer_names=True)
+model = baseline_model()
+model.fit(np.array(finalFeatures), dummy_labels, validation_data=(np.array(finalGeneratedFeatures), dummy_generated_labels), epochs=200, batch_size=5)
