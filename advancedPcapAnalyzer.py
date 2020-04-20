@@ -121,7 +121,7 @@ def extractFeatures(ngrams, signatures):
     for ngram in ngrams:
       if matches(ngram, signature):
         count += 1
-    frequency = (count)/float(len(signatures))
+    frequency = 0 if len(ngrams) == 0 else (count)/float(len(ngrams))
     features.append(frequency)
   return features
 

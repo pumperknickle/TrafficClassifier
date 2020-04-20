@@ -10,6 +10,7 @@ from keras.layers import Dense
 from keras.wrappers.scikit_learn import KerasClassifier
 from advancedPcapAnalyzer import extractFeatures, extractSignatures, ngrams, dbcluster, dbclustermin, convertToFeatures
 from activityGeneration import generate
+from math import floor, ceil
 
 directory = sys.argv[1]
 extended = directory + '/*/'
@@ -41,6 +42,8 @@ for path in paths:
       print(path)
       print("empty feature!")
   gen = []
+  if len(real) == 0 or len(real[0]) == 0:
+    continue
   generated = generate(path, distance_threshold, min_cluster, min_sig_size, max_sig_size, len(real))
   for g in generated:
     if len(g) != 0:
@@ -100,6 +103,21 @@ def baseline_model():
 all_results = dict()
 
 for device in all_fake_features:
+  print(device_numbers[device])
+  X_real = all_real_features[device]
+  X_fake = all_fake_features[device]
+  for i in range(len(X_real)):
+    print("real")
+    print(X_real[i])
+    print("fake")
+    print(X_fake[i])
+    differences = []
+    for n in range(len(X_real[i])):
+      differences.append(abs(X_real[i][n] - X_fake[i][n]))
+    print(differences)
+    
+
+for device in all_fake_features:
   X_real = all_real_features[device]
   X_fake = all_fake_features[device]
   real_labels = [0] * len(X_real)
@@ -116,4 +134,3 @@ for device in all_fake_features:
 for key, value in all_results.items():
   print(device_numbers[key])
   print(value)
-  

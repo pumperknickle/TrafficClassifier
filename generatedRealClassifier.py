@@ -35,16 +35,16 @@ generatedLabels = []
 for path in paths:
   generated = generate(path, distance_threshold, min_cluster, min_sig_size, max_sig_size, seqeunces_per_device)
   for g in generated:
-    print(path)
-    print(g)
-    generatedFeatures.append(g)
-    generatedLabels.append(currentLabel)
+    if len(g) != 0:
+      generatedFeatures.append(g)
+      generatedLabels.append(currentLabel)
   pcapPath = path + '/*.pcap'
   pcapFiles = glob.glob(pcapPath)
   for file in pcapFiles:
     featureV = convertToFeatures(file)
-    features.append(featureV)
-    labels.append(currentLabel)
+    if len(featureV) != 0:
+      features.append(featureV)
+      labels.append(currentLabel)
   currentLabel += 1
 
 print(features)
