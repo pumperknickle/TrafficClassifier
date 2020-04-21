@@ -18,7 +18,7 @@ def convert_sequence(sequence, all_signatures, minSigSize, maxSigSize):
 
 def choose(elements):
   total = sum(elements.values())
-  rand_val = random.randint(0, total-1)
+  rand_val = random.randint(0, total)
   for key, value in elements.items():
     if rand_val <= value:
       return key
@@ -112,6 +112,7 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
     transitions[lastStringElement] = elements_for_last
     bigrams = ngrams(2, sequence)
     for bigram in bigrams:
+      print(bigram)
       leftSingle = isinstance(bigram[0][0], int)
       rightSingle = isinstance(bigram[1][0], int)
       left = str(bigram[0][0]) if leftSingle else signatureToString(bigram[0])
@@ -124,7 +125,7 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
     generated = []
     generatedSigs = []
     previous_element = "start"
-    while not (previous_element == 'end' and len(generated) >= min_packets) and len(generated) < max_packets:
+    while not previous_element == 'end':
       if exceeds_max_repetitions(generated, max_repititons) or exceeds_max_repetitions(generatedSigs, max_signature_repetitions):
         new_choose = transitions[previous_element].copy()
         new_choose.pop(previous_element, None)
@@ -133,7 +134,7 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
         next_choose = transitions[previous_element]
         previous_element = choose(next_choose)
       if previous_element == "end":
-        previous_element = "start"
+        break
       elif is_int(previous_element):
         generated.append(int(previous_element))
         generatedSigs.append(previous_element)
