@@ -112,7 +112,6 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
     transitions[lastStringElement] = elements_for_last
     bigrams = ngrams(2, sequence)
     for bigram in bigrams:
-      print(bigram)
       leftSingle = isinstance(bigram[0][0], int)
       rightSingle = isinstance(bigram[1][0], int)
       left = str(bigram[0][0]) if leftSingle else signatureToString(bigram[0])
@@ -126,13 +125,8 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
     generatedSigs = []
     previous_element = "start"
     while not previous_element == 'end':
-      if exceeds_max_repetitions(generated, max_repititons) or exceeds_max_repetitions(generatedSigs, max_signature_repetitions):
-        new_choose = transitions[previous_element].copy()
-        new_choose.pop(previous_element, None)
-        previous_element = choose(new_choose)
-      else:
-        next_choose = transitions[previous_element]
-        previous_element = choose(next_choose)
+      next_choose = transitions[previous_element]
+      previous_element = choose(next_choose)
       if previous_element == "end":
         break
       elif is_int(previous_element):

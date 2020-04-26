@@ -101,12 +101,13 @@ def baseline_model():
   return model
 
 all_results = dict()
-    
+
 for device in all_fake_features:
   X_real = all_real_features[device]
-  real_labels = [0] * floor(float(len(X_real)) / 2)
-  fake_labels = [1] * ceil(float(len(X_real)) / 2)
-  features = X_real
+  X_fake = all_fake_features[device]
+  real_labels = [0] * len(X_real)
+  fake_labels = [1] * len(X_fake)
+  features = X_real + X_fake
   labels = real_labels + fake_labels
   dummy_labels = np_utils.to_categorical(labels)
   estimator = KerasClassifier(build_fn=baseline_model, epochs=200, batch_size=5, verbose=1)
