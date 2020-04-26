@@ -31,38 +31,6 @@ def is_int(val):
         return False
     return True
 
-def remove_trailing(sequence):
-  sequence_length = len(sequence)
-  last_element = sequence[sequence_length - 1]
-  for i in range(sequence_length - 2, -1, -1):
-    if last_element != sequence[i]:
-      return sequence[:i+1]
-  return []
-
-def max_consecutive_repetitions(seq):
-  result=1
-  max_result=0
-  last_seen=seq[0]
-  for v in seq[1:]:
-    if v==last_seen:
-      result += 1
-    else:
-      if result > max_result:
-        max_result = result
-      last_seen = v
-      result = 1
-  if result > max_result:
-    max_result = result
-  return max_result
-
-def exceeds_max_repetitions(seq, max):
-  if len(seq) < max + 1:
-    return False
-  last_elements = seq[-max - 1:]
-  if len(set(last_elements)) == 1:
-    return True
-  return False
-
 def stringRep(sig):
   return str(sig[0]) if isinstance(sig[0], int) else signatureToString(sig)    
 
@@ -74,6 +42,7 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
   for file in pcapFiles:
     sequence = convertToFeatures(file)
     sequences.append(sequence)
+  # Extract signatures from all packet streams
   for i in range(minSigSize, maxSigSize + 1):
     allngrams = []
     for sequence in sequences:
@@ -85,40 +54,25 @@ def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, 
     cluster = dbclustermin(allngrams, distance_threshold, clusterMin)
     signatures = extractSignatures(cluster, i)
     all_signatures[i] = signatures
+  # Convert array of packets to array of signatures and chatty packets
   converted_sequences = []
-  max_repititons = 1
-  max_signature_repetitions = 1
-  min_packets = 10000000
-  max_packets = 0
   for sequence in sequences:
-    sequence_length = len(sequence)
-    min_packets = min(min_packets, sequence_length)
-    max_packets = max(max_packets, sequence_length)
-    max_repititons = max(max_repititons, max_consecutive_repetitions(sequence))
     converted_sequence = convert_sequence(sequence, all_signatures, minSigSize, maxSigSize)
-    max_signature_repetitions = max(max_signature_repetitions, max_consecutive_repetitions(converted_sequence))
     converted_sequences.append(convert_sequence(sequence, all_signatures, minSigSize, maxSigSize))
+  # Extract Markov Chain from array of signatures and chatty packets
   transitions = dict()
   for sequence in converted_sequences:    
-    firstElement = sequence[0]
-    firstStringElement = str(firstElement[0]) if isinstance(firstElement[0], int) else signatureToString(firstElement)
-    lastElement = sequence[-1]
-    lastStringElement = str(lastElement[0]) if isinstance(lastElement[0], int) else signatureToString(lastElement)
-    elements_for_start = transitions.get("start", dict())
-    elements_for_start[firstStringElement] = elements_for_start.get(firstStringElement, 0) + 1
-    transitions["start"] = elements_for_start
-    elements_for_last = transitions.get(lastStringElement, dict())
-    elements_for_last["end"] = elements_for_last.get("end", 0) + 1
-    transitions[lastStringElement] = elements_for_last
-    bigrams = ngrams(2, sequence)
+    extendedSequence = ["start"] + sequence + ["end"]
+    bigrams = ngrams(2, extendedSequence)
     for bigram in bigrams:
       leftSingle = isinstance(bigram[0][0], int)
       rightSingle = isinstance(bigram[1][0], int)
-      left = str(bigram[0][0]) if leftSingle else signatureToString(bigram[0])
-      right = str(bigram[1][0]) if rightSingle else signatureToString(bigram[1])
+      left = "start" if bigram[0] == "start" else (str(bigram[0][0]) if leftSingle else signatureToString(bigram[0]))
+      right = "end" if bigram[1] == "end" else (str(bigram[1][0]) if rightSingle else signatureToString(bigram[1]))
       trans_for_element = transitions.get(left, dict())
       trans_for_element[right] = trans_for_element.get(right, 0) + 1
       transitions[left] = trans_for_element
+  # Generate with markov chain
   all_gen = []
   for num in range(n):  
     generated = []
