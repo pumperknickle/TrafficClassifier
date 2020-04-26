@@ -47,8 +47,6 @@ for path in paths:
       labels.append(currentLabel)
   currentLabel += 1
 
-print(features)
-print(generatedFeatures)
 signatureFeatures = [None] * len(features)
 generatedSignatureFeatures = [None] * len(generatedFeatures)
 
