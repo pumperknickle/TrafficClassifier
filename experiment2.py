@@ -38,9 +38,6 @@ for path in paths:
     featureV = convertToFeatures(file)
     if len(featureV) != 0: 
       real.append(featureV)
-    else:
-      print(path)
-      print("empty feature!")
   gen = []
   if len(real) == 0 or len(real[0]) == 0:
     continue
@@ -48,8 +45,6 @@ for path in paths:
   for g in generated:
     if len(g) != 0:
       gen.append(g)
-    else:
-      print("empty generation!")
   if len(real) != 0 and len(gen) != 0 and len(real[0]) != 0 and len(gen[0]) != 0:
     real_sequences[currentDevice] = real
     fake_sequences[currentDevice] = gen
