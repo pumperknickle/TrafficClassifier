@@ -32,7 +32,62 @@ def is_int(val):
     return True
 
 def stringRep(sig):
-  return str(sig[0]) if isinstance(sig[0], int) else signatureToString(sig)    
+  return str(sig[0]) if isinstance(sig[0], int) else signatureToString(sig)
+
+def generateProbabilistic(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, n):
+  pcapPath = directory + '/*.pcap'
+  pcapFiles = glob.glob(pcapPath)
+  sequences = []
+  all_signatures = dict()
+  frequencies = []
+  for file in pcapFiles:
+    sequence = convertToFeatures(file)
+    sequences.append(sequence)
+  # Extract signatures from all packet streams
+  for i in range(minSigSize, maxSigSize + 1):
+    allngrams = []
+    for sequence in sequences:
+      ngramVector = ngrams(i, sequence)
+      for ngram in ngramVector:
+        allngrams.append(ngram)
+    cluster = dbclustermin(allngrams, distance_threshold, clusterMin)
+    signatures = extractSignatures(cluster, i)
+    all_signatures[i] = signatures
+  for sequence in sequences:
+    frequency = dict()
+    for i in range(minSigSize, maxSigSize + 1):
+      ngramVectors = ngrams(i, sequence)
+      signatures = all_signatures[i]
+      frequency[i] = extractFeatures(ngramVectors, signatures)
+    frequencies.append(frequency)
+  return frequencies, all_signatures
+
+def remaining(arr1, arr2):
+  remain = []
+  for i in range(len(arr1)):
+    if arr1[i] > arr2[i]:
+      remain.append(i)
+  return remain
+
+def exceeds(arr1, arr2):
+  for i in range(len(arr1)):
+    if arr1[i] > arr2[i]
+      return false
+  return true
+
+def generateWithFrequency(frequencies, all_signatures, number_generated):
+  current_frequencies = dict()
+  sigSizes = list(all_signatures.keys())
+  sigSizes.sort(reverse=True)
+  print(sigSizes)
+  for i in sigSizes:
+    zeros = [0] * len(all_signatures[i])
+    current_frequencies[i]
+  for i in sigSizes:
+    remaining_sigs = remaining(frequencies[i], current_frequencies[i])
+    while remaining_sigs:
+      frequency_for_sig_size = current_frequencies[i]
+             
 
 def generate(directory, distance_threshold, clusterMin, minSigSize, maxSigSize, n):
   pcapPath = directory + '/*.pcap'

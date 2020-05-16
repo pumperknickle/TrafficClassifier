@@ -104,6 +104,8 @@ all_results = dict()
     
 for device in all_fake_features:
   X_real = all_real_features[device]
+  if len(X_real) < 20:
+    continue
   real_labels = [0] * floor(float(len(X_real)) / 2)
   fake_labels = [1] * ceil(float(len(X_real)) / 2)
   features = X_real
