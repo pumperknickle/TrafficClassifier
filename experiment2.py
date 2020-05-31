@@ -19,7 +19,7 @@ paths = glob.glob(extended)
 # distance metric used by dbscan
 distance_threshold = 5.0
 # total ngrams divided by cluster threshold is equal to the min_samples needed to form a cluster in dbscan
-min_cluster = 10
+min_cluster = 4
 min_sig_size = 2
 max_sig_size = 5
 

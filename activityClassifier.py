@@ -1,6 +1,6 @@
 import sys
 import glob
-from advancedPcapAnalyzer import extractFeatures, extractSignatures, ngrams, dbcluster, dbclustermin, convertToFeatures
+from advancedPcapAnalyzer import extractFeatures, extractSignatures, ngrams, dbcluster, dbclustermin, convertToFeatures, signatureExtractionAll, featureExtractionAll
 
 directory = sys.argv[1]
 extended = directory + '/*/'
@@ -9,7 +9,7 @@ paths = glob.glob(extended)
 # distance metric used by dbscan
 distance_threshold = 5.0
 # total ngrams divided by cluster threshold is equal to the min_samples needed to form a cluster in dbscan
-cluster_threshold = 5000
+cluster_threshold = 4
 
 currentLabel = 0
 features = []
@@ -25,30 +25,13 @@ for path in paths:
     labels.append(currentLabel)
   currentLabel += 1
 
-signatureFeatures = [None] * len(features)
-
-# Create features
-for i in range(2, 6):
-  allngrams = []
-  for feature in features:
-    ngramVector = ngrams(i, feature)
-    for ngram in ngramVector:
-      allngrams.append(ngram)
-  cluster = dbclustermin(allngrams, distance_threshold, 4)
-  signatures = extractSignatures(cluster, i)
-  for n in range(len(features)):
-    feature = features[n]
-    extractedNgrams = ngrams(i, feature)
-    newFeatures = extractFeatures(extractedNgrams, signatures)
-    if signatureFeatures[n] == None:
-      signatureFeatures[n] = newFeatures
-    else:
-      signatureFeatures[n] = signatureFeatures[n] + newFeatures
+all_signatures = signatureExtractionAll(features, 2, 5, distance_threshold, cluster_threshold)
+signatureFeatures = featureExtractionAll(features, all_signatures)
 
 finalFeatures = []
 finalLabels = []
 totalClassified = 0
-for i in range(len(features)):
+for i in range(len(signatureFeatures)):
   signatureFeature = signatureFeatures[i]
   if not all(v == 0 for v in signatureFeature):
     finalFeatures.append(signatureFeature)

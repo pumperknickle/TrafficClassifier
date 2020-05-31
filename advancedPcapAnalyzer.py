@@ -10,6 +10,7 @@ def most_common(lst):
  
 def convertToFeatures(pathToFile):
   pcaps = pyshark.FileCapture(pathToFile)
+  pcaps.set_debug()
   tuples = []
   for pcap in pcaps:
     if 'IP' in pcap and 'TCP' in pcap and 'TLS' not in pcap:
@@ -124,6 +125,34 @@ def extractFeatures(ngrams, signatures):
     frequency = 0 if len(ngrams) == 0 else (count)/float(len(ngrams))
     features.append(frequency)
   return features
+
+def signatureExtractionAll(sequences, minSigSize, maxSigSize, distance_threshold, cluster_threshold):
+  all_signatures = dict()
+  for i in range(minSigSize, maxSigSize + 1):
+    allngrams = []
+    for sequence in sequences:
+      ngramVector = ngrams(i, sequence)
+      for ngram in ngramVector:
+        allngrams.append(ngram)
+    cluster = dbclustermin(allngrams, distance_threshold, cluster_threshold)
+    signatures = extractSignatures(cluster, i)
+    all_signatures[i] = signatures
+  return all_signatures
+
+def featureExtractionAll(sequences, all_signatures):
+  signatureFeatures = [None] * len(sequences)
+  for i in range(len(sequences)):
+    signatureFeatures[i] = featureExtraction(sequences[i], all_signatures)
+  return signatureFeatures
+
+def featureExtraction(sequence, all_signatures):
+  all_features = []
+  for i, signatures in all_signatures.items():
+    ngramVector = ngrams(i, sequence)
+    newFeatures = extractFeatures(ngramVector, signatures)
+    all_features = all_features + newFeatures
+  return all_features
+
 
 def signatureToString(signature):
   signature_ints = []
