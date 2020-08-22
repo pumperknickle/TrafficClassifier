@@ -44,7 +44,7 @@ for i in range(len(sequences)):
 for i in range(len(sequences)):
   print(labels[1])
   filename = str(labels[i]) + '.csv'
-  with open(filename, mode='w') as csvfile:
+  with open(filename, mode='a') as csvfile:
     csv_writer = csv.writer(csvfile, delimiter=' ')
     chunks = divide_chunks(sequences[i], seq_length)
     for chunk in chunks:
