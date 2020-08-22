@@ -170,10 +170,10 @@ def stringToSignature(item):
     sig.append((int_arr[i], int_arr[i+1]))
   return sig
         
-pathToFile = '/Users/jbao/DeviceIdentityClassifier/captures2/D-LinkSensor/Setup-B-1-STA.pcap'
-features = convertToFeatures(pathToFile)
-bigrams = ngrams(3, features)
-cluster = dbcluster(bigrams, 3.0, 100)
-signatures = extractSignatures(cluster, 3)
-features = extractFeatures(bigrams, signatures)
-print(features)
+# pathToFile = '/Users/jbao/DeviceIdentityClassifier/captures2/D-LinkSensor/Setup-B-1-STA.pcap'
+# features = convertToFeatures(pathToFile)
+# bigrams = ngrams(3, features)
+# cluster = dbcluster(bigrams, 3.0, 100)
+# signatures = extractSignatures(cluster, 3)
+# features = extractFeatures(bigrams, signatures)
+# print(features)
