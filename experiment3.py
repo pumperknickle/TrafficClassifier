@@ -19,8 +19,8 @@ cluster_threshold = 4
 min_sig_size = 1
 max_sig_size = 7
 
-real_filename = 'real_data1.txt'
-fake_filename = 'fake_data1.txt'
+real_filename = 'real_data.txt'
+fake_filename = 'fake_data.txt'
 
 
 def extractSequences(filename):
